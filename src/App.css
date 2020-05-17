@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
 }
 
 .App-logo {
@@ -14,8 +16,6 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,4 +35,48 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.app-title {
+  color: #374052;
+}
+
+.note {
+  height: 75vh;
+  width: 640px;
+  resize: none;
+  color: white;
+  background-color: #282c34;
+  border: none;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.note-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  list-style-type: none;
+  height: 100vh;
+  margin: 0;
+  padding: 2rem 0;
+  background-color: #1c1e25;
+}
+
+.note-list button {
+  background: none;
+  color: #63749e;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem 2rem;
+  transition: 0.3s;
+}
+.note-list button:hover {
+  background-color: #282c34;
+}
+
+.note-list button.active {
+  background-color: #111318;
+  color: white;
 }
