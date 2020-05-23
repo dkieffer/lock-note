@@ -18,7 +18,8 @@ class App extends React.Component {
       currentNoteIndex: null, // the index of current note in the noteList array 
       indexTicker: this.loadIndexTicker(),
       currentNoteData: null,
-      smallScreen: false
+      smallScreen: false,
+      contentTimerID: null
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
@@ -27,7 +28,9 @@ class App extends React.Component {
     this.toggleDropDown = this.toggleDropDown.bind(this);
     this.saveNote = this.saveNote.bind(this);
     this.createNewNote = this.createNewNote.bind(this);
-    this.deleteNote = this.deleteNote.bind(this)
+    this.deleteNote = this.deleteNote.bind(this);
+    this.startSaveTimer = this.startSaveTimer.bind(this);
+    this.removeSaveTimer = this.removeSaveTimer.bind(this);
   } 
 
   componentDidMount() {
@@ -113,8 +116,8 @@ class App extends React.Component {
   }
 
   handleChange(event) {
-    event.target.focus();
-    this.saveNote(this.state.currentNoteData.title, event.target.value, this.state.currentNoteID);
+    // event.target.focus();
+    // this.saveNote(this.state.currentNoteData.title, event.target.value, this.state.currentNoteID);
     this.setState({
       currentNoteData: {
         ...this.state.currentNoteData,
@@ -122,6 +125,29 @@ class App extends React.Component {
       },
       dropDownOpen: false
     });
+  }
+
+  startSaveTimer(event, name) {
+    var originalContent = event.target.value;
+    if (name === 'contentTimer') {
+      var contentTimer = window.setInterval(() => {
+        if (originalContent !== this.state.currentNoteData.content) {
+          console.log('trigger a save babies');
+          originalContent = this.state.currentNoteData.content;
+          this.saveNote(this.state.currentNoteData.title, this.state.currentNoteData.content, this.state.currentNoteID);
+        }
+      }, 30000);
+
+      this.setState({
+        contentTimerID: contentTimer
+      })
+    }
+  }
+
+  removeSaveTimer(name) {
+    if (name === 'contentTimer') { 
+      window.clearInterval(this.state.contentTimerID);
+    }
   }
 
   handleTitleChange(event, key) {
@@ -262,6 +288,8 @@ class App extends React.Component {
           handleChange={this.handleChange}
           handleTitleChange={this.handleTitleChange}
           noteKey={this.state.currentNoteIndex}
+          startSaveTimer={this.startSaveTimer}
+          removeSaveTimer={this.removeSaveTimer}
         />
       </div>
     );
