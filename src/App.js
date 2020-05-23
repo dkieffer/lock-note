@@ -269,7 +269,6 @@ class App extends React.Component {
         <OutsideWatcher function={this.toggleDropDown} listen={this.state.dropDownOpen}>
           <DropDown
             deleteNote={this.deleteNote}
-            createNewNote={this.createNewNote}
             currentNoteID={this.state.currentNoteID}
             saveNote={this.saveNote}
             dropDownOpen={this.state.dropDownOpen}
@@ -278,9 +277,11 @@ class App extends React.Component {
 
         <div className={className}>
           <Button label="Close" function={this.toggleMenu} />
+          <h1>Lock Note</h1>
           <ul className="note-list">
             {noteListItems}
           </ul>
+          <button className="dropDown__button" onClick={() => this.createNewNote()}>New Note</button>
         </div>
 
         <NoteArea

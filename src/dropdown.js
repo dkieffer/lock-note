@@ -8,7 +8,6 @@ function DropDown(props) {
     
     return(
         <div className={className}>
-            <button className="dropDown__button" onClick={() => props.createNewNote()}>New Note</button>
             <button className="dropDown__button" onClick={() => props.deleteNote(props.currentNoteID)}>Delete Note</button>
         </div>
     )
