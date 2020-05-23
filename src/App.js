@@ -4,6 +4,7 @@ import NotesListItem from './notesListItem.js';
 import NoteArea from './NoteArea';
 import Button from './button';
 import DropDown from './dropdown';
+import OutsideWatcher from './OutsideWatcher';
 
 class App extends React.Component {
   constructor(props) {
@@ -239,13 +240,15 @@ class App extends React.Component {
       <div className="App">
         <Button label="Notes" function={this.toggleMenu} position={'top-left'}/>
         <Button label="Options" function={this.toggleDropDown} position={'top-right'}/>
-        <DropDown
-          deleteNote={this.deleteNote}
-          createNewNote={this.createNewNote}
-          currentNoteID={this.state.currentNoteID}
-          saveNote={this.saveNote}
-          dropDownOpen={this.state.dropDownOpen}
-        />
+        <OutsideWatcher function={this.toggleDropDown} listen={this.state.dropDownOpen}>
+          <DropDown
+            deleteNote={this.deleteNote}
+            createNewNote={this.createNewNote}
+            currentNoteID={this.state.currentNoteID}
+            saveNote={this.saveNote}
+            dropDownOpen={this.state.dropDownOpen}
+          />
+        </OutsideWatcher>
 
         <div className={className}>
           <Button label="Close" function={this.toggleMenu} />
