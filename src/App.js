@@ -5,6 +5,7 @@ import NoteArea from './NoteArea';
 import Button from './button';
 import DropDown from './dropdown';
 import OutsideWatcher from './OutsideWatcher';
+var CryptoJS = require("crypto-js");
 
 class App extends React.Component {
   constructor(props) {
@@ -34,7 +35,6 @@ class App extends React.Component {
   } 
 
   componentDidMount() {
-    console.log('componentDidMount');
     this.loadNoteData();
     if (this.state.noteIndex.length > 0) {
       this.loadNote(this.state.noteIndex[0]);
@@ -81,10 +81,18 @@ class App extends React.Component {
 
   loadNoteData() {
     for (var i = 0; i < this.state.noteIndex.length; i++) {
+      let noteData = this.decrypt(this.state.noteIndex[i]);
       this.setState({
-        ['note'+i]: JSON.parse(localStorage.getItem(this.state.noteIndex[i]))
+        ['note'+i]: noteData
       });
     }
+  }
+
+  decrypt(noteID) {
+    var encryptedNote = localStorage.getItem(noteID);
+    var bytes = CryptoJS.AES.decrypt(encryptedNote, 'password');
+    var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    return decryptedData;
   }
 
   loadIndexTicker() {
@@ -174,17 +182,24 @@ class App extends React.Component {
       content: content
     }
     var noteJSON = JSON.stringify(note);
-    localStorage.setItem(id, noteJSON);
+    var noteEncrypted = CryptoJS.AES.encrypt(noteJSON, 'password').toString();
+    localStorage.setItem(id, noteEncrypted);
   }
 
   loadNote(id) {
-    console.log('load note ' + id);
-    var note = JSON.parse(localStorage.getItem(id));
+    // console.log('load note ' + id);
+    var noteEncrypted = localStorage.getItem(id);
+    var noteDecryptedBytes = CryptoJS.AES.decrypt(noteEncrypted, 'password');
+    var decryptedData = JSON.parse(noteDecryptedBytes.toString(CryptoJS.enc.Utf8));
+
+
+    // var note = JSON.parse(localStorage.getItem(id));
+
     var noteIndex = this.state.noteIndex.findIndex(noteIDs => noteIDs === id);
     this.setState({
       currentNoteID: id,
       currentNoteIndex: noteIndex,
-      currentNoteData: note
+      currentNoteData: decryptedData
     });
 
     if (this.state.smallScreen && this.state.menuOpen) {
