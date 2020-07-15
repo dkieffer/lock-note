@@ -7,7 +7,7 @@ function Button(props) {
     }
     
     return(
-        <button className={className} onClick={props.function}>
+        <button className={className} onClick={() => props.function(props.args)}>
             {props.label}
         </button>
     )

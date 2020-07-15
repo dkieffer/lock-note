@@ -5,12 +5,14 @@ import NoteArea from './NoteArea';
 import Button from './button';
 import DropDown from './dropdown';
 import OutsideWatcher from './OutsideWatcher';
+import SignIn from './views/SignIn';
 var CryptoJS = require("crypto-js");
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      activeView: 'main',
       menuOpen: false,
       dropDownOpen: false,
       noteList: null,
@@ -32,6 +34,7 @@ class App extends React.Component {
     this.deleteNote = this.deleteNote.bind(this);
     this.startSaveTimer = this.startSaveTimer.bind(this);
     this.removeSaveTimer = this.removeSaveTimer.bind(this);
+    this.setActiveView = this.setActiveView.bind(this);
   } 
 
   componentDidMount() {
@@ -50,6 +53,14 @@ class App extends React.Component {
     this.setState((state) => ({
       smallScreen: smallScreen
     }))
+  }
+
+  setActiveView(view) {
+    console.log('setActiveView');
+    console.log(view);
+    this.setState({
+      activeView: view
+    });
   }
 
   toggleMenu() {
@@ -82,17 +93,32 @@ class App extends React.Component {
   loadNoteData() {
     for (var i = 0; i < this.state.noteIndex.length; i++) {
       let noteData = this.decrypt(this.state.noteIndex[i]);
+      if (noteData === null) {
+        window.alert('Your password is incorrect.')
+      }
       this.setState({
         ['note'+i]: noteData
-      });
+      }, console.log(this.state['note'+i]));
     }
   }
 
   decrypt(noteID) {
+    console.log('decrypt!');
     var encryptedNote = localStorage.getItem(noteID);
     var bytes = CryptoJS.AES.decrypt(encryptedNote, 'password');
-    var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-    return decryptedData;
+    try {
+      var string = bytes.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+      return null
+    }
+
+    try {
+      var decryptedData = JSON.parse(string);
+      return decryptedData;
+    } catch (error) {
+      return null
+    }
+    
   }
 
   loadIndexTicker() {
@@ -189,9 +215,9 @@ class App extends React.Component {
   loadNote(id) {
     // console.log('load note ' + id);
     var noteEncrypted = localStorage.getItem(id);
-    var noteDecryptedBytes = CryptoJS.AES.decrypt(noteEncrypted, 'password');
-    var decryptedData = JSON.parse(noteDecryptedBytes.toString(CryptoJS.enc.Utf8));
-
+    // var noteDecryptedBytes = CryptoJS.AES.decrypt(noteEncrypted, 'password');
+    // var decryptedData = JSON.parse(noteDecryptedBytes.toString(CryptoJS.enc.Utf8));
+    var decryptedData = this.decrypt(id);
 
     // var note = JSON.parse(localStorage.getItem(id));
 
@@ -296,7 +322,9 @@ class App extends React.Component {
           <ul className="note-list">
             {noteListItems}
           </ul>
-          <button className="dropDown__button" onClick={() => this.createNewNote()}>New Note</button>
+          <Button label="New Note" function={this.createNewNote} />
+          <Button label="Sign In" function={this.setActiveView} args={'SignIn'}/>
+
         </div>
 
         <NoteArea
@@ -307,6 +335,8 @@ class App extends React.Component {
           startSaveTimer={this.startSaveTimer}
           removeSaveTimer={this.removeSaveTimer}
         />
+
+        <SignIn activeView={this.state.activeView} setActiveView={this.setActiveView} />
       </div>
     );
   }

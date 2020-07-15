@@ -202,3 +202,17 @@
     transition: 0.3s;
   }
 }
+
+.view {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  right: 100vw;
+  opacity: 0;
+  background-color: #282c34;
+}
+
+.view.-active {
+  right: 0;
+  opacity: 1; 
+}
